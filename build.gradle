@@ -27,7 +27,7 @@ dependencies {
     compileOnly "com.velocitypowered:velocity-proxy:3.4.0-SNAPSHOT"
     compileOnly "libs:limboapi-1.1.27-SNAPSHOT"
     compileOnly "net.kyori:adventure-nbt:4.12.0"
-    implementation 'de.mkammerer:argon2-jvm-nolibs:2.12'
+    implementation 'de.mkammerer:argon2-jvm:2.12'
     annotationProcessor "com.velocitypowered:velocity-api:3.4.0-SNAPSHOT"
 }
 
@@ -68,12 +68,12 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-tasks.register('moveJar', Copy) {
+/*tasks.register('moveJar', Copy) {
     dependsOn build
     from("build/libs")
-    into("/home/foxy/desktop/verTest/vel/plugins")
+    into("/home/fox/desktop/verTest/vel/plugins")
     include("AuthVee-1.0.jar")
-}
+}*/
 
 // Привязываем shadowJar к обычному build
 build {
@@ -117,4 +117,4 @@ shadowJar {
     mergeServiceFiles()
 }
 
-build.finalizedBy(moveJar)
+//build.finalizedBy(moveJar)

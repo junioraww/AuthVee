@@ -34,9 +34,9 @@ public enum Locale {
             "&cНа жаль, у вас занадто довгий пароль!\n&6Скоротіть його до 60 символів."
     ),
     ServersDown(
-            "&cНе удалось законнектиться!\n&6Похоже, что сервера регистрации отдыхают. Напишите в сообщество: discord.gg/MC6ccff",
-            "&cFailed to connect!\n&6It looks like the registration servers are resting. You can contact us: discord.gg/MC6ccff",
-            "&cНе вдалося увійти!\n&6Схоже, що сервера реєстрації відпочивають. Напишіть спільноті: discord.gg/MC6ccff"
+            "&cНе удалось законнектиться!\n&6Похоже, что сервера регистрации отдыхают. Свяжитесь с администрацией проекта.",
+            "&cFailed to connect!\n&6It looks like the registration servers are resting. Contact the project administration.",
+            "&cНе вдалося увійти!\n&6Схоже, що сервера реєстрації відпочивають. Зверніться до адміністрації проекту."
     ),
     RegisterSuccess(
             "&aУспешная регистрация!",

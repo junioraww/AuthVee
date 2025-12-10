@@ -12,16 +12,10 @@ import net.elytrium.limboapi.api.Limbo;
 import net.elytrium.limboapi.api.LimboSessionHandler;
 import net.elytrium.limboapi.api.material.Item;
 import net.elytrium.limboapi.api.player.LimboPlayer;
-import net.elytrium.limboapi.api.protocol.packets.PacketFactory;
 import net.elytrium.limboapi.protocol.packets.s2c.*;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.IntBinaryTag;
 import net.kyori.adventure.title.Title;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -56,23 +50,14 @@ public class SessionHandler implements LimboSessionHandler {
         this.limboPlayer.disableFalling();
         this.wrongTries = 0;
 
-        System.out.println("spawning");
-
         Player player = limboPlayer.getProxyPlayer();
 
         plugin.getServer().getEventManager().fire(new HerculesSessionEvent(player.getUsername())).thenAccept((event) -> {
-            System.out.println("giving");
-            sendExperienceBar();
-            System.out.println("and then");
-            giveFoxMap();
-            System.out.println("given");
-
             limboPlayer.flushPackets();
 
             if (cachedPlayer.state == CachedPlayer.State.Unresolved) {
                 try {
-                    Credentials credentials = Hercules.requestCredentials(event.getUsername());
-                    System.out.println("creds" + credentials);
+                    Credentials credentials = Heracles.requestCredentials(event.getUsername());
                     if(credentials == null) cachedPlayer.state = CachedPlayer.State.Register;
                     else {
                         cachedPlayer.state = CachedPlayer.State.Login;
@@ -85,13 +70,18 @@ public class SessionHandler implements LimboSessionHandler {
 
             System.out.println("status " + cachedPlayer.state);
 
-            if (cachedPlayer.state == CachedPlayer.State.Register) player.showTitle(
-                    Title.title(Message.get(Locale.RegTitle.get(language)), Message.get(Locale.RegSubtitle.get(language)), Titles.times)
-            );
-            else if (cachedPlayer.state == CachedPlayer.State.Login) player.showTitle(
-                    Title.title(Message.get(Locale.LoginTitle.get(language)), Message.get(Locale.LoginSubtitle.get(language)), Titles.times)
-            );
-            else if (cachedPlayer.state == CachedPlayer.State.Unresolved) player.showTitle(Titles.error);
+            if (cachedPlayer.state == CachedPlayer.State.Unresolved) player.showTitle(Titles.error);
+            else {
+                sendExperienceBar();
+                giveFoxMap();
+
+                if (cachedPlayer.state == CachedPlayer.State.Register) player.showTitle(
+                        Title.title(Message.get(Locale.RegTitle.get(language)), Message.get(Locale.RegSubtitle.get(language)), Titles.times)
+                );
+                else if (cachedPlayer.state == CachedPlayer.State.Login) player.showTitle(
+                        Title.title(Message.get(Locale.LoginTitle.get(language)), Message.get(Locale.LoginSubtitle.get(language)), Titles.times)
+                );
+            }
         });
     }
 
@@ -112,13 +102,8 @@ public class SessionHandler implements LimboSessionHandler {
     }
 
     private void giveFoxMap() {
-        String imgPath = AuthVee.getConfig().get("fox_image");
-
-        ImageCache imageCache = new ImageCache();
-        BufferedImage img = imageCache.getImage(imgPath);
-
-        System.out.println("[MapDebug] start; img=" + img.getWidth() + "x" + img.getHeight());
-        limboPlayer.sendImage(1, img, false);
+        System.out.println("[MapDebug] start; img=" + AuthVee.image.getWidth() + "x" + AuthVee.image.getHeight());
+        limboPlayer.sendImage(1, AuthVee.image, false);
 
         limboPlayer.writePacket(plugin.getFactory().getPacketFactory().createSetSlotPacket(
                 0, 45, plugin.getFactory().getItem(Item.FILLED_MAP), 1, 0,
@@ -140,7 +125,7 @@ public class SessionHandler implements LimboSessionHandler {
                     else if(length > 60) Message.send(player, Locale.PasswordIsTooLong.get(language));
                     else {
                         try {
-                            boolean isSuccess = Hercules.register(player.getUsername(), password);
+                            boolean isSuccess = Heracles.register(player.getUsername(), password);
 
                             if(isSuccess) {
                                 if (scheduled != null) scheduled.cancel(false);
@@ -185,9 +170,9 @@ public class SessionHandler implements LimboSessionHandler {
 
     @Override
     public void onGeneric(Object packet) {
-        Logger.getLogger("packet").info(packet + "");
+        //Logger.getLogger("packet").info(packet + "");
         /*
-        Клиент изменил язык в настройках
+        Если клиент изменил язык в настройках
          */
         if(packet instanceof ClientSettingsPacket) {
             language = ((ClientSettingsPacket) packet).getLocale();

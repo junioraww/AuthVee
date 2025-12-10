@@ -20,6 +20,7 @@ import me.junioraww.authvee.auth.PlayerCache;
 import me.junioraww.authvee.command.LogoutCommand;
 import me.junioraww.authvee.handler.Events;
 import me.junioraww.authvee.handler.SessionHandler;
+import me.junioraww.authvee.utils.ImageCache;
 import me.junioraww.authvee.utils.TLSClient;
 import me.junioraww.authvee.utils.Titles;
 import net.elytrium.limboapi.api.Limbo;
@@ -35,8 +36,8 @@ import net.kyori.adventure.sound.Sound;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -57,6 +58,7 @@ public class AuthVee {
     private Limbo authServer;
     private ProxyServer server;
     public PlayerCache playerCache = new PlayerCache();
+    public static BufferedImage image;
 
     @Inject
     @DataDirectory
@@ -135,18 +137,11 @@ public class AuthVee {
         eventManager.unregisterListeners(this);
         eventManager.register(this, new Events(this));
 
-        /*try {
-            WorldFile worldFile = this.factory.openWorldFile(BuiltInWorldFileType.SCHEMATIC, Path.of("/srv/velocity/world.schematic"));
-            worldFile.toWorld(this.factory, authWorld, 0, 0, 0);
-        } catch (IOException e) {
-            Logger.getLogger("Auth World Error").info("Не удалось загрузить /srv/velocity/world.schematic");
-        }*/
-
         this.authServer = this.factory
                 .createLimbo(authWorld)
                 .setName("Auth")
                 .setWorldTime(1L)
-                .setGameMode(GameMode.SURVIVAL)
+                .setGameMode(GameMode.ADVENTURE)
                 .registerCommand(new LimboCommandMeta(List.of("l", "log", "login")))
                 .registerCommand(new LimboCommandMeta(List.of("r", "reg", "register")))
                 .registerCommand(new LimboCommandMeta(List.of("c", "code")));
@@ -157,6 +152,11 @@ public class AuthVee {
                 })
                 .repeat(60L, TimeUnit.SECONDS)
                 .schedule();
+
+        String imgPath = AuthVee.getConfig().get("fox_image");
+
+        ImageCache imageCache = new ImageCache();
+        image = imageCache.getImage(imgPath);
     }
 
     @Subscribe

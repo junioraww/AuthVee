@@ -1,14 +1,13 @@
 package me.junioraww.authvee.utils;
 
-import com.google.gson.Gson;
 import me.junioraww.authvee.AuthVee;
 import me.junioraww.authvee.auth.Credentials;
 import me.junioraww.authvee.network.Request;
 import me.junioraww.authvee.network.Response;
 
-public class Hercules {
-    private static final Gson gson = new Gson();
+import java.util.Arrays;
 
+public class Heracles {
     private static class CredentialsRequest extends Request {
         public CredentialsRequest(String u) {
             super(Action.CREDENTIALS, u);
@@ -25,7 +24,6 @@ public class Hercules {
         Request request = new CredentialsRequest(username);
 
         Response response = AuthVee.getClient().sendRequest(request);
-        System.out.println("resp" + response.getResult());
 
         if(response.getResult() == Response.Result.FAILURE) return null;
 
